@@ -30,21 +30,32 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
     ## Requisiti:
     
     È necessario esportare nella cartella la relazione come html:
+
         - è presente un file html del tipo "Relazione <nome>.html"
+
         - serie di immagini "image_<id>.<ext>"
 
 
     ## Funzioni:
 
     - Lettura del file html, da cui:
+
         - si estraggono i nomi delle immagini presenti
+
         - si estrae la didasclia corrispondente alle immagini
+
     - Unione delle immagini:
+
         - le immagini con lo stesso indice sono unite in un unico file tipo png
+
     - Salvataggio immagini:
+
         - le immagini sono salvate in directory di livello superiore
+
         - si crea nuova cartella basata sul <nome> del file html
+
         - si salvano le immagini con la didascalia come nome
+
     
     """
 
