@@ -2,7 +2,7 @@
 """
 # Unione di immagini
 
-Il presente script unisce le immagini presenti nella cartella in un'unica immagine per essere importata facilemnte in kun file .odt 
+Il presente script unisce le immagini presenti nella cartella in un'unica immagine per essere importata facilmente in un file .odt 
 
 funzioni:
 
