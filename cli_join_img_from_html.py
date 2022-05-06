@@ -4,7 +4,6 @@ from PIL import Image
 import os, inspect
 import re
 import html
-from ordered_set import OrderedSet
 import click
 
 # %% lettura immagini
@@ -42,7 +41,7 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
 
         - si estraggono i nomi delle immagini presenti
 
-        - si estrae la didasclia corrispondente alle immagini
+        - si estrae la didascalia corrispondente alle immagini
 
     - Unione delle immagini:
 
@@ -74,7 +73,7 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
     if dir_name:
         new_dir = dir_name
     else:
-        new_dir, = os.path.splitext(file_html.name)
+        new_dir, _ = os.path.splitext(file_html.name)
     
     save_path = os.path.join(destination, new_dir)
 
@@ -97,36 +96,74 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
     with open(file_html) as f:
         body = f.read()
 
-    lista_img = list(re.finditer(r'(?<=img src=")(\S+)(?=")', body)) # lista di re.match object
-    # il match object è del tipo "image_1.jpg": lo si spezza in nome+ext, si salva nome in nomi unici
-    nomi_unici = OrderedSet( [os.path.splitext(img.group(0))[0] for img in lista_img] )
+    """
+    le immagini nel file html sono definite in questo modo:
+
+        <a href="#mark_6"></a><div class="ff12">
+        <img src="image_6.jpg" border="0" alt="Immagine esportata" />
+        </div>
+        <div class="ff12"> </div>
+        <div class="ff12">
+        <img src="image_1.gif" border="0" alt="Immagine esportata" />
+        </div>
+        <br/>
+        <div class="ff13">
+        <div class="ff13">Sollecitazioni gusci Foo massime</div>
+        </div>
+        <br/>
+
+    """
+
+    jpg_gif = list(re.finditer(r'(?<=img src=")(\S+)(?=")', body)) # lista di re.match object
+    """
+    la lista è composta da file tipo jpg e file tipo gif (scala valori)
+    si suddivide la lista_img in lista fi jpg e lista di gif
+    un jpg precede sempre una gif, pertanto si poppa il primo elemento della lista gif per traslare tutti gli elementi di uno;
+    le liste sono unite e le righe vuote sono eliminate dalla lista finale
+
+    
+    """
+    jpg = []
+    gif = []
+    
+    for img in jpg_gif:
+        if os.path.splitext(img.group(0))[1] == '.jpg':
+            jpg.append(img)
+            gif.append(None)
+        else:
+            jpg.append(None)
+            gif.append(img)
+    
+    gif.pop(0)
+
+    jpg_gif = list(filter(lambda x: x[0], zip(jpg, gif)))
+
 
     print("nuovo file aggiunto in :")
-    for nu in nomi_unici:
-        # filtra immagini della lista in base al nome unico: se presenti jpg+gif crea la coppia di re.Match
-        subg = list(filter(lambda x: nu == os.path.splitext(x.group(0))[0], lista_img))
-        
+    for img in jpg_gif:
+       
         # estrazione didascalia
         """
         si cerca il primo match della stringa "ff13" dall'ultima posizione del gruppo corrente
         """
-        index = subg[-1].end()
+        index = img[0].span()[-1]
         try:
             didascalia = html.unescape(re.search('(?<="ff13">)(.+)(?=<)', body[index:]).group(0))
         except AttributeError:
-            didascalia = nu
+            didascalia = img[0].group(0)
 
         # Pulizia dei caratteri illegali per salvataggio file
         didascalia = re.sub(r'[\\/*?<>:"|]', "§",  didascalia)
         # Rimozione punto alla fine della stringa (evita che il nome file abbia ..ext)
         didascalia = re.sub(r"\.$", "", didascalia)
 
-        # apertura delle immagini del gruppo
+        # apre le immagini in source e salva la lista dei file corrispondenti
         images = []
-        for sg in subg:
-            img_path = os.path.join(source, sg.group(0))
-            images.append(Image.open(img_path))
-            file_list.append(img_path)
+        for i in img:
+            if i:
+                img_path = os.path.join(source, i.group(0))
+                images.append(Image.open(img_path))
+                file_list.append(img_path)
         
         # dimensioni immagini
         widths, heights = zip(*(i.size for i in images))
@@ -151,4 +188,7 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
             os.remove(f)
 
 #%% DEBUG
-# join_img_html(source='./Spettri', destination='.', delete_files=False)
+if __name__ == '__main__':
+    join_img_html(source='./test', destination='.', keep_files=True)
+
+# %%
