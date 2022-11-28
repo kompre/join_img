@@ -115,9 +115,10 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
     """
 
     jpg_gif = list(re.finditer(r'(?<=img src=")(\S+)(?=")', body)) # lista di re.match object
+    # print(jpg_gif)
     """
     la lista è composta da file tipo jpg e file tipo gif (scala valori)
-    si suddivide la lista_img in lista fi jpg e lista di gif
+    si suddivide la lista_img in lista di jpg e lista di gif
     un jpg precede sempre una gif, pertanto si poppa il primo elemento della lista gif per traslare tutti gli elementi di uno;
     le liste sono unite e le righe vuote sono eliminate dalla lista finale
 
