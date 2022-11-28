@@ -1,2 +1,2 @@
-click==8.0.0
--e git+https://github.com/kompre/join_img@a60668cc0353987cceaf27ddadce0eb325375496#egg=join_img_html
+click
+Pillow

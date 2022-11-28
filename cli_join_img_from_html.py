@@ -135,8 +135,16 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
             jpg.append(None)
             gif.append(img)
     
+    """
+    la lista gif è traslata di 1 rispetto a jpg in quanto un'immagine tipo gif segue sempre la jpg: 
+        1. pop il primo elemento della lista gif in quanto None per allinearla alla jpg;
+        2. aggiungo un none in coda alla lista gif per eguagliare la lunghezza della lista jpg
+    """
     gif.pop(0)
+    gif.append(None)
 
+
+    # filtro solo le coppie con jpg esistente
     jpg_gif = list(filter(lambda x: x[0], zip(jpg, gif)))
 
 
@@ -190,6 +198,6 @@ def join_img_html(source, destination, dir_name=None, keep_files=False):
 
 #%% DEBUG
 if __name__ == '__main__':
-    join_img_html(source='./test', destination='.', keep_files=True)
+    join_img_html(['.', '-k'])
 
 # %%

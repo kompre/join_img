@@ -3,10 +3,10 @@ from setuptools import setup
 setup(
     package='find',
     name='join_img_html',
-    version='0.2',
+    version='0.3',
     py_modules=['cli_join_img_from_html'],
     install_requires=[
-        'click==8.0.0',
+        'click==8.1.3',
         'Pillow'
         # 'Pillow==8.2.0'
     ],
